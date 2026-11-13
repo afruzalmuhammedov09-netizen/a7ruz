@@ -31,7 +31,9 @@ Android Studio: Build > Build APK(s).
 **Play Market uchun** imzolangan **.aab** kerak: Android Studio'da Build > Generate Signed Bundle / APK > Android App Bundle, kalit (keystore) yarating va uni yoʻqotmang. Play Console'da (Google akkauntingiz bilan, oʻzingiz kirasiz) ilova yarating, .aab ni yuklang, `store/listing.md` dagi matnlarni va privacy policy havolasini kiriting. Yangi shaxsiy akkauntlar uchun Google ochiq sinovdan oʻtishni talab qilishi mumkin: Play Console talablarini tekshiring.
 
 ## 3. iPhone (iOS)
-Faqat Mac kompyuterda: `npx cap add ios`, `npx cap sync`, `npx cap open ios`, keyin Xcode. App Store uchun Apple Developer akkaunti kerak.
+Capacitor 7 ishlatiladi. CI build uchun minimal iOS versiyasi 16.0.
+GitHub Actions → **Build iOS Simulator** simulyator uchun `App.app` yig‘adi.
+Haqiqiy iPhone uchun Mac’da `npm install`, `npx cap add ios --packagemanager SPM`, `npx cap sync ios`, `npx cap open ios` buyruqlarini ishlating. Xcode’da deployment target’ni 16.0 qilib, Signing & Capabilities bo‘limida Apple hisobingizga tegishli Team’ni tanlang va qurilmangizga Run qiling.
 
 ## 4. Sayt (a7assistent)
 `www/` papkasini Netlify, Cloudflare Pages yoki GitHub Pages ga yuklang va domen ulang. APK faylni saytga qoʻyib, "Yuklab olish" havolasi berishingiz mumkin.
