@@ -3,6 +3,9 @@ const http = require('http'), fs = require('fs'), crypto = require('crypto'), pa
 const PORT = process.env.PORT || 3000;
 const DB = path.join(__dirname, 'db.json');
 const E = { email: process.env.ESKIZ_EMAIL, pass: process.env.ESKIZ_PASSWORD, from: process.env.ESKIZ_FROM || '4546' };
+if (process.env.NODE_ENV === 'production' && (!E.email || !E.pass)) {
+  throw new Error('ESKIZ_EMAIL and ESKIZ_PASSWORD are required in production');
+}
 let db = { users: {}, tokens: {} };
 try { db = JSON.parse(fs.readFileSync(DB, 'utf8')); } catch (e) {}
 const saveDb = () => fs.writeFileSync(DB, JSON.stringify(db));
@@ -52,15 +55,22 @@ http.createServer(async (req, res) => {
       const c = codes.get(phone);
       if (c && Date.now() - c.sent < 60000) return send(res, 429, { error: 'wait' });
       const code = String(crypto.randomInt(100000, 1000000));
-      codes.set(phone, { code, exp: Date.now() + 300000, tries: 0, sent: Date.now() });
-      if (E.email) await eskizSend(phone, 'A7 Assistent tasdiqlash kodi: ' + code);
-      else console.log('[DEV] ' + phone + ' kod: ' + code);
+      const pending = { code, exp: Date.now() + 300000, tries: 0, sent: Date.now(), delivered: false };
+      codes.set(phone, pending);
+      try {
+        if (E.email) await eskizSend(phone, 'A7 Assistent tasdiqlash kodi: ' + code);
+        else console.log('[DEV] ' + phone + ' kod: ' + code);
+        pending.delivered = true;
+      } catch (error) {
+        if (codes.get(phone) === pending) codes.delete(phone);
+        throw error;
+      }
       return send(res, 200, { ok: true });
     }
     if (req.method === 'POST' && url === '/api/verify') {
       const { phone, code } = await body(req);
       const c = codes.get(phone);
-      if (!c || Date.now() > c.exp || c.tries >= 5) return send(res, 400, { error: 'code' });
+      if (!c?.delivered || Date.now() > c.exp || c.tries >= 5) return send(res, 400, { error: 'code' });
       c.tries++;
       if (String(code) !== c.code) return send(res, 400, { error: 'code' });
       codes.delete(phone);
