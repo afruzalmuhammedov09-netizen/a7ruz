@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f1b3d">
+<title>A7 Assistent</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&display=swap">
+<style>
+:root{--bg:#f1f4fb;--card:#fff;--tx:#0f1b3d;--mu:#5d6a8f;--bd:#dde3f2;--ac:#2f6bff;--ok:#12a884;--warn:#d9480f;--on:#fff;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a1230;--card:#131f47;--tx:#eef2ff;--mu:#9aa8d4;--bd:#243262;--ac:#5b8cff;--ok:#2fd6ae;--warn:#ff8a5c;--on:#0a1230}}
+:root[data-theme="dark"]{--bg:#0a1230;--card:#131f47;--tx:#eef2ff;--mu:#9aa8d4;--bd:#243262;--ac:#5b8cff;--ok:#2fd6ae;--warn:#ff8a5c;--on:#0a1230}
+*{box-sizing:border-box;margin:0}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{background:var(--bg);color:var(--tx);font-family:Manrope,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-weight:500;line-height:1.45;min-height:100dvh}
+.app{max-width:440px;margin:0 auto;padding:20px 18px 32px;min-height:100dvh;display:flex;flex-direction:column;gap:16px}
+h1{font-size:30px;font-weight:800;letter-spacing:-.02em}
+h2{font-size:22px;font-weight:800;letter-spacing:-.01em}
+p,.mu{color:var(--mu)}
+.logo{width:44px;height:44px;display:block;border-radius:12px}
+.logo.big{width:132px;height:132px;border-radius:32px;box-shadow:0 18px 40px -14px rgba(47,107,255,.55)}
+.hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:14px;padding:24px 0}
+.hero p{max-width:30ch}
+.stack{display:flex;flex-direction:column;gap:10px}
+.btn{font:inherit;font-weight:700;font-size:16px;border:1.5px solid var(--bd);background:var(--card);color:var(--tx);border-radius:16px;padding:15px 18px;cursor:pointer;width:100%;text-align:center}
+.btn.pri{background:var(--ac);border-color:var(--ac);color:var(--on)}
+.btn.danger{color:var(--warn);border-color:var(--warn)}
+.btn:focus-visible,.chip:focus-visible,.row:focus-visible,input:focus-visible,textarea:focus-visible,.av:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+.langs{display:flex;gap:6px;justify-content:flex-end}
+.chip{font:inherit;font-weight:700;font-size:13px;padding:7px 12px;border-radius:999px;border:1.5px solid var(--bd);background:var(--card);color:var(--mu);cursor:pointer}
+.chip.on{background:var(--tx);color:var(--bg);border-color:var(--tx)}
+.top{display:flex;align-items:center;gap:12px}
+.top .grow{flex:1;min-width:0}
+.top .grow b{display:block;font-size:17px}
+.av{width:46px;height:46px;border-radius:50%;border:0;background:var(--ac);color:var(--on);font:inherit;font-weight:800;font-size:18px;cursor:pointer}
+.card{background:var(--card);border:1.5px solid var(--bd);border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.card label,.card .lb{font-weight:700;font-size:15px}
+input,textarea{font:inherit;font-weight:500;width:100%;border:1.5px solid var(--bd);background:var(--bg);color:var(--tx);border-radius:14px;padding:13px 14px;font-size:16px;resize:none}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.seg button{font:inherit;font-weight:800;font-size:16px;padding:14px;border-radius:14px;border:1.5px solid var(--bd);background:var(--bg);color:var(--mu);cursor:pointer}
+.seg button.on{background:var(--ac);border-color:var(--ac);color:var(--on)}
+.pill{display:flex;gap:10px;align-items:center;padding:12px 14px;border-radius:14px;background:var(--bg);font-weight:700;font-size:14px}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--mu);flex:none}
+.pill.live .dot{background:var(--ok);box-shadow:0 0 0 5px rgba(18,168,132,.22)}
+.voices{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.voice{font:inherit;text-align:left;padding:12px;border-radius:14px;border:1.5px solid var(--bd);background:var(--bg);color:var(--tx);cursor:pointer;display:flex;flex-direction:column}
+.voice small{color:var(--mu);font-weight:500;font-size:13px}
+.voice.on{border-color:var(--ac);background:var(--card);box-shadow:inset 0 0 0 1.5px var(--ac)}
+.phone{display:flex;gap:8px}
+.phone .pre{display:flex;align-items:center;padding:0 14px;border:1.5px solid var(--bd);border-radius:14px;background:var(--card);font-weight:800}
+.err{color:var(--warn);font-weight:700;font-size:14px;min-height:20px}
+.hint{font-size:13px;color:var(--mu)}
+.row{font:inherit;display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;padding:14px 4px;background:none;border:0;border-bottom:1px solid var(--bd);color:var(--tx);cursor:pointer}
+.row:last-child{border-bottom:0}
+.row span{color:var(--mu);font-weight:500}
+.prof{display:flex;flex-direction:column;align-items:center;gap:8px;padding:8px 0}
+.prof .av{width:84px;height:84px;font-size:34px;cursor:default}
+.back{align-self:flex-start;font:inherit;font-weight:700;background:none;border:0;color:var(--ac);cursor:pointer;padding:6px 0}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:12px 18px;border-radius:14px;font-weight:700;font-size:14px;max-width:90vw;z-index:5}
+.btn.okb{background:var(--ok);border-color:var(--ok);color:#06251d}
+.btn.bot{margin-top:auto}
+.pill:not(.live) .dot{background:var(--warn)}
+.inst{font-size:13px;color:var(--mu);text-align:center;max-width:34ch;margin:0 auto}
+@media (prefers-reduced-motion:no-preference){.app.enter>*{animation:in .25s ease-out both}@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2f6bff"/><stop offset="1" stop-color="#12c9a0"/></linearGradient></defs>
+<symbol id="logo" viewBox="0 0 96 96"><rect width="96" height="96" fill="url(#lg)"/><g fill="#fff" opacity=".9"><rect x="30" y="20" width="5" height="12" rx="2.5"/><rect x="39" y="14" width="5" height="24" rx="2.5"/><rect x="48" y="18" width="5" height="16" rx="2.5"/><rect x="57" y="12" width="5" height="28" rx="2.5"/><rect x="66" y="21" width="5" height="10" rx="2.5"/></g><text x="48" y="66" text-anchor="middle" font-family="Manrope,system-ui,sans-serif" font-weight="800" font-size="30" fill="#fff">A7</text><text x="48" y="82" text-anchor="middle" font-family="Manrope,system-ui,sans-serif" font-weight="800" font-size="8.5" letter-spacing="1.6" fill="#fff">ASSISTENT</text></symbol></svg>
+<main class="app" id="app"></main>
+<script src="config.js"></script>
+<script>
+var API=(window.A7_API||'').replace(/\/$/,'');
+var T={
+uz:{tag:'Qoʻngʻiroqlarga siz oʻrningizga javob beradigan sunʼiy intellekt.',connect:'Assistent ulash',exit:'Chiqish',pt:'Raqamingizni kiriting',ps:'Shu raqamga SMS kod yuboramiz.',pl:'Telefon raqam',send:'Kod yuborish',ct:'SMS kodni kiriting',cs:'Kod yuborildi: ',verify:'Tasdiqlash',demo:'Demo rejim: kod 123456',badp:'Raqam 9 ta raqamdan iborat boʻlishi kerak.',badc:'Kod notoʻgʻri. Qayta kiriting.',back:'Orqaga',hi:'Salom',doing:'Hozir nima qilyapsiz?',dph:'Masalan: yigʻilishdaman, 15:00 da qoʻngʻiroq qilaman',can:'Qoʻngʻiroqlarga javob bera olasizmi?',yes:'Ha',no:'Yoʻq',voice:'Assistent ovozi',live:'Assistent qoʻngʻiroqlarga javob beradi',idle:'Siz oʻzingiz javob berasiz. Assistent kutib turadi.',prof:'Profil',name:'Ism',noname:'Ismni kiriting',chnum:'Raqamni almashtirish',lang:'Til',out:'Profildan chiqish',save:'Saqlash',bye:'Ilovadan chiqdingiz',reopen:'Qayta ochish',off:'Assistent uzildi',saved:'Saqlandi',f:'ayol',m:'erkak',pn:'Ism',neterr:'Server bilan aloqa yoʻq. Qayta urinib koʻring.',wait:'Biroz kuting va qayta urinib koʻring.',confirm:'Tasdiqlash',confd:'Tasdiqlandi',pend:'Tasdiqlanmagan: assistent hali faol emas',resend:'Kodni qayta yuborish',resent:'Kod qayta yuborildi',inst:'Telefonga oʻrnatish: brauzer menyusidan «Bosh ekranga qoʻshish» ni tanlang (iPhone’da Safari, Ulashish tugmasi orqali).'},
+ru:{tag:'Искусственный интеллект, который отвечает на звонки вместо вас.',connect:'Подключить ассистента',exit:'Выход',pt:'Введите номер телефона',ps:'Мы отправим на него SMS с кодом.',pl:'Номер телефона',send:'Отправить код',ct:'Введите код из SMS',cs:'Код отправлен: ',verify:'Подтвердить',demo:'Демо-режим: код 123456',badp:'В номере должно быть 9 цифр.',badc:'Неверный код. Попробуйте ещё раз.',back:'Назад',hi:'Привет',doing:'Чем вы сейчас заняты?',dph:'Например: на встрече, перезвоню в 15:00',can:'Можете ли вы отвечать на звонки?',yes:'Да',no:'Нет',voice:'Голос ассистента',live:'Ассистент отвечает на звонки',idle:'Вы отвечаете сами. Ассистент ждёт.',prof:'Профиль',name:'Имя',noname:'Введите имя',chnum:'Сменить номер',lang:'Язык',out:'Выйти из профиля',save:'Сохранить',bye:'Вы вышли из приложения',reopen:'Открыть снова',off:'Ассистент отключён',saved:'Сохранено',f:'женский',m:'мужской',pn:'Имя',neterr:'Нет связи с сервером. Попробуйте ещё раз.',wait:'Подождите немного и повторите.',confirm:'Подтвердить',confd:'Подтверждено',pend:'Не подтверждено: ассистент пока не активен',resend:'Отправить код снова',resent:'Код отправлен повторно',inst:'Установка на телефон: в меню браузера выберите «На главный экран» (на iPhone в Safari через кнопку «Поделиться»).'},
+en:{tag:'An AI that answers your phone calls for you.',connect:'Connect assistant',exit:'Exit',pt:'Enter your phone number',ps:'We will text a code to this number.',pl:'Phone number',send:'Send code',ct:'Enter the SMS code',cs:'Code sent to ',verify:'Verify',demo:'Demo mode: code 123456',badp:'The number must have 9 digits.',badc:'Wrong code. Try again.',back:'Back',hi:'Hi',doing:'What are you doing right now?',dph:'For example: in a meeting, will call back at 3 pm',can:'Can you answer calls?',yes:'Yes',no:'No',voice:'Assistant voice',live:'The assistant answers your calls',idle:'You answer yourself. The assistant waits.',prof:'Profile',name:'Name',noname:'Enter your name',chnum:'Change number',lang:'Language',out:'Log out of profile',save:'Save',bye:'You left the app',reopen:'Open again',off:'Assistant disconnected',saved:'Saved',f:'female',m:'male',pn:'Name',neterr:'Cannot reach the server. Please try again.',wait:'Please wait a bit and try again.',confirm:'Confirm',confd:'Confirmed',pend:'Not confirmed: the assistant is not active yet',resend:'Resend code',resent:'Code sent again',inst:'Install on your phone: choose “Add to Home Screen” in the browser menu (on iPhone, in Safari via the Share button).'}};
+var L={uz:'Oʻzbekcha',ru:'Русский',en:'English'};
+var V=[['Madina','f'],['Dilnoza','f'],['Jasur','m'],['Sardor','m']];
+var S={lang:'uz',name:'',phone:'',connected:false,status:'',answer:'no',voice:0,conf:false,token:'',screen:'welcome',tmp:'',tmpc:'',err:'',edit:false,change:false,anim:false};
+try{var raw=localStorage.getItem('a7a');if(raw){var o=JSON.parse(raw);for(var k in o)S[k]=o[k];}}catch(e){}
+S.screen=S.connected?'home':'welcome';S.err='';S.edit=false;S.change=false;
+function save(){try{localStorage.setItem('a7a',JSON.stringify({lang:S.lang,name:S.name,phone:S.phone,connected:S.connected,status:S.status,answer:S.answer,voice:S.voice,conf:S.conf,token:S.token}))}catch(e){}sync()}
+function api(m,p,b){return fetch(API+p,{method:m,headers:{'Content-Type':'application/json','Authorization':S.token?'Bearer '+S.token:''},body:b?JSON.stringify(b):undefined}).then(function(r){return r.json().catch(function(){return{}}).then(function(j){if(!r.ok)throw{status:r.status};return j})})}
+var tm;function sync(){if(!API||!S.token)return;clearTimeout(tm);tm=setTimeout(function(){api('PUT','/api/me',{name:S.name,status:S.status,answer:S.answer,voice:S.voice,conf:S.conf}).catch(function(){})},600)}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}
+function fmt(p){return '+998 '+p.replace(/(\d{2})(\d{3})(\d{2})(\d{2})/,'$1 $2 $3 $4')}
+function langs(t){return '<div class="langs">'+Object.keys(L).map(function(k){return '<button class="chip'+(S.lang==k?' on':'')+'" data-a="lang" data-v="'+k+'" aria-label="'+L[k]+'">'+k.toUpperCase()+'</button>'}).join('')+'</div>'}
+function render(){
+var t=T[S.lang],h='';document.documentElement.lang=S.lang;
+if(S.screen=='welcome'){h=langs(t)+'<section class="hero"><svg class="logo big" role="img" aria-label="A7 Assistent"><use href="#logo"/></svg><h1>A7 Assistent</h1><p>'+t.tag+'</p></section><div class="stack"><button class="btn pri" data-a="start">'+t.connect+'</button><button class="btn" data-a="exit">'+t.exit+'</button></div><p class="inst">'+t.inst+'</p>'}
+else if(S.screen=='phone'){h='<button class="back" data-a="back">‹ '+t.back+'</button><h2>'+t.pt+'</h2><p>'+t.ps+'</p><div class="phone"><div class="pre">+998</div><input id="ph" type="tel" inputmode="numeric" maxlength="9" placeholder="90 123 45 67" aria-label="'+t.pl+'" value="'+esc(S.tmp)+'" data-focus></div><div class="err" role="alert">'+S.err+'</div><button class="btn pri" data-a="send">'+t.send+'</button>'}
+else if(S.screen=='code'){h='<button class="back" data-a="phone">‹ '+t.back+'</button><h2>'+t.ct+'</h2><p>'+t.cs+fmt(S.tmp)+'</p><input id="cd" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="••••••" aria-label="'+t.ct+'" value="'+esc(S.tmpc)+'" data-focus><div class="err" role="alert">'+S.err+'</div>'+(API?'':'<p class="hint">'+t.demo+'</p>')+'<button class="btn pri" data-a="verify">'+t.verify+'</button><button class="btn" data-a="resend">'+t.resend+'</button>'}
+else if(S.screen=='home'){var live=S.conf&&S.answer=='no';
+h='<div class="top"><svg class="logo" role="img" aria-label="A7"><use href="#logo"/></svg><div class="grow"><b>A7 Assistent</b><span class="mu">'+t.hi+(S.name?', '+esc(S.name):'')+'</span></div><button class="av" data-a="profile" aria-label="'+t.prof+'">'+esc((S.name||'A').trim().charAt(0).toUpperCase())+'</button></div>'
++'<div class="card"><label for="st">'+t.doing+'</label><textarea id="st" rows="3" placeholder="'+t.dph+'">'+esc(S.status)+'</textarea></div>'
++'<div class="card"><div class="lb" id="qa">'+t.can+'</div><div class="seg" role="group" aria-labelledby="qa"><button class="'+(S.answer=='yes'?'on':'')+'" aria-pressed="'+(S.answer=='yes')+'" data-a="ans" data-v="yes">'+t.yes+'</button><button class="'+(S.answer=='no'?'on':'')+'" aria-pressed="'+(S.answer=='no')+'" data-a="ans" data-v="no">'+t.no+'</button></div><div class="pill'+(live?' live':'')+'"><span class="dot"></span>'+(!S.conf?t.pend:live?t.live:t.idle)+'</div></div>'
++'<div class="card"><div class="lb">'+t.voice+'</div><div class="voices">'+V.map(function(v,i){return '<button class="voice'+(S.voice==i?' on':'')+'" aria-pressed="'+(S.voice==i)+'" data-a="voice" data-v="'+i+'"><b>'+v[0]+'</b><small>'+t[v[1]]+'</small></button>'}).join('')+'</div></div><button class="btn bot '+(S.conf?'okb':'pri')+'" data-a="confirm">'+(S.conf?'✓ '+t.confd:t.confirm)+'</button>'}
+else if(S.screen=='profile'){h='<button class="back" data-a="home">‹ '+t.back+'</button><div class="prof"><div class="av" aria-hidden="true">'+esc((S.name||'A').trim().charAt(0).toUpperCase())+'</div><h2>'+(S.name?esc(S.name):t.noname)+'</h2><span class="mu">'+(S.phone?fmt(S.phone):'')+'</span></div>'
++'<div class="card">'+(S.edit?'<label for="nm">'+t.name+'</label><input id="nm" type="text" maxlength="30" placeholder="'+t.pn+'" value="'+esc(S.name)+'" data-focus><button class="btn pri" data-a="savename">'+t.save+'</button>':'<button class="row" data-a="editname">'+t.name+'<span>'+(S.name?esc(S.name):t.noname)+' ›</span></button>')
++'<button class="row" data-a="changenum">'+t.chnum+'<span>'+(S.phone?fmt(S.phone):'')+' ›</span></button></div>'
++'<div class="card"><div class="lb">'+t.lang+'</div>'+langs(t).replace('class="langs"','class="langs" style="justify-content:flex-start"')+'</div>'
++'<button class="btn danger" data-a="logout">'+t.out+'</button>'}
+else if(S.screen=='bye'){h='<section class="hero"><svg class="logo big" role="img" aria-label="A7 Assistent"><use href="#logo"/></svg><h2>'+t.bye+'</h2></section><button class="btn pri" data-a="reopen">'+t.reopen+'</button>'}
+var ap=document.getElementById('app');ap.className='app'+(S.anim?' enter':'');S.anim=false;ap.innerHTML=h;var f=document.querySelector('#app [data-focus]');if(f){f.focus();var n=f.value.length;try{f.setSelectionRange(n,n)}catch(e){}}}
+function toast(m){var d=document.createElement('div');d.className='toast';d.setAttribute('role','status');d.textContent=m;document.body.appendChild(d);setTimeout(function(){d.remove()},2200)}
+function go(s){S.screen=s;S.err='';S.anim=true;render()}
+function act(a,v){var t=T[S.lang];
+if(a=='lang'){S.lang=v;save();render()}
+else if(a=='start'){S.change=false;S.tmp='';go('phone')}
+else if(a=='exit'){try{window.close()}catch(e){}go('bye')}
+else if(a=='reopen'){go('welcome')}
+else if(a=='back'){go(S.connected?'profile':'welcome')}
+else if(a=='phone'){go('phone')}
+else if(a=='send'){if(S.tmp.length!=9){S.err=t.badp;render();return}if(!API){S.tmpc='';go('code');return}if(S.busy)return;S.busy=true;api('POST','/api/send-code',{phone:S.tmp}).then(function(){S.busy=false;S.tmpc='';go('code')}).catch(function(e){S.busy=false;S.err=e.status==429?t.wait:t.neterr;render()})}
+else if(a=='resend'){S.tmpc='';if(!API){render();toast(t.resent);return}api('POST','/api/send-code',{phone:S.tmp}).then(function(){render();toast(t.resent)}).catch(function(e){S.err=e.status==429?t.wait:t.neterr;render()})}
+else if(a=='verify'){var fin=function(){S.phone=S.tmp;S.connected=true;save();var ch=S.change;S.change=false;go(ch?'profile':'home')};if(!API){if(S.tmpc!=='123456'){S.err=t.badc;render();return}fin();return}if(S.busy)return;S.busy=true;api('POST','/api/verify',{phone:S.tmp,code:S.tmpc}).then(function(j){S.busy=false;S.token=j.token;fin()}).catch(function(e){S.busy=false;S.err=(e.status==400||e.status==401)?t.badc:t.neterr;render()})}
+else if(a=='ans'){S.answer=v;S.conf=false;save();render()}
+else if(a=='confirm'){S.conf=true;save();render();toast(t.confd)}
+else if(a=='voice'){S.voice=+v;S.conf=false;save();render()}
+else if(a=='profile'){S.edit=false;go('profile')}
+else if(a=='home'){go('home')}
+else if(a=='editname'){S.edit=true;render()}
+else if(a=='savename'){var el=document.getElementById('nm');S.name=el?el.value.trim():S.name;S.edit=false;save();render();toast(t.saved)}
+else if(a=='changenum'){S.change=true;S.tmp='';go('phone')}
+else if(a=='logout'){if(API&&S.token){api('POST','/api/logout').catch(function(){})}S.token='';S.connected=false;S.phone='';S.change=false;S.conf=false;save();go('welcome');toast(t.off)}}
+document.addEventListener('click',function(e){var b=e.target.closest('[data-a]');if(b)act(b.dataset.a,b.dataset.v)});
+document.addEventListener('input',function(e){var i=e.target;
+if(i.id=='ph'){i.value=i.value.replace(/\D/g,'').slice(0,9);S.tmp=i.value}
+else if(i.id=='cd'){i.value=i.value.replace(/\D/g,'').slice(0,6);S.tmpc=i.value}
+else if(i.id=='st'){S.status=i.value;if(S.conf){S.conf=false;var cb=document.querySelector('[data-a=confirm]');if(cb){cb.className='btn bot pri';cb.textContent=T[S.lang].confirm;var pl=document.querySelector('.pill');if(pl){pl.className='pill';pl.lastChild.textContent=T[S.lang].pend}}}save()}});
+document.addEventListener('keydown',function(e){if(e.key!='Enter')return;var i=e.target;if(i.id=='ph')act('send');else if(i.id=='cd')act('verify');else if(i.id=='nm')act('savename')});
+render();
+</script>
+</body>
+</html>
