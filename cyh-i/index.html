@@ -99,7 +99,7 @@
 .a7-vehicle-card small{font-size:9px;line-height:1.3;color:#bbcfdb}
 </style>
 </head><body>
-<canvas id="game" aria-label="CYH I 3D shahar o‘yini"></canvas><div id="demTerrainStatus" style="position:fixed;bottom:43px;right:10px;z-index:1000;color:#fff;font:700 12px system-ui;background:#182d31db;border:1px solid #8dd0a8;border-radius:6px;padding:5px 9px;pointer-events:none">DEM tog‘lar yuklanmoqda</div><div id="upgradeVersion" style="position:fixed;bottom:8px;right:10px;z-index:1000;color:#fff;font:700 12px system-ui;background:#182d31db;border:1px solid #8dd0a8;border-radius:6px;padding:5px 9px;pointer-events:none">CYH I • HAQIQIY TOG‘LAR • DEM V3</div><canvas id="castSprites" aria-label="2D tasvir qatlami, o‘chirilgan" style="display:none;position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:2"></canvas><canvas id="fx" aria-hidden="true"></canvas>
+<canvas id="game" aria-label="CYH I 3D shahar o‘yini"></canvas><div id="demTerrainStatus" style="position:fixed;bottom:43px;right:10px;z-index:1000;color:#fff;font:700 12px system-ui;background:#182d31db;border:1px solid #8dd0a8;border-radius:6px;padding:5px 9px;pointer-events:none">DEM tog‘lar yuklanmoqda</div><div id="upgradeVersion" style="position:fixed;bottom:8px;right:10px;z-index:1000;color:#fff;font:700 12px system-ui;background:#182d31db;border:1px solid #8dd0a8;border-radius:6px;padding:5px 9px;pointer-events:none">CYH I • O‘ZBEKISTON RELYEFI • V4</div><canvas id="castSprites" aria-label="2D tasvir qatlami, o‘chirilgan" style="display:none;position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:2"></canvas><canvas id="fx" aria-hidden="true"></canvas>
 <div id="hud" class="hidden"><div id="brandCorner">A7 <span>★★★★</span></div><div id="identity"><div class="money" id="money">1 000 000 SO‘M</div><div class="heroHudName" id="heroHudName">SAYOHATCHI · PERSONAJLAR [F3]</div><div class="stars" id="wanted">☆☆☆☆</div></div><div id="clock">12:00 · KUZ</div><div id="missionSmall">CYH I · VIRTUAL O‘ZBEKISTON</div><canvas id="mini" width="196" height="176"></canvas><div id="bars"><div id="healthbar"></div><div id="armorbar"></div></div><div id="street">JIZZAX · MARKAZIY KO‘CHA</div><div id="vehicleHud"><strong id="speedText">0</strong> km/soat<br><span id="fuelText">Yoqilg‘i: 100%</span></div><div id="prompt"></div><div id="toast"></div></div>
 
 <div id="studioIntro" class="hidden" aria-label="A7 Games logotip animatsiyasi">
@@ -149,7 +149,7 @@
 <div id="phone"><div id="phoneTop"><small>A7 OS · OFFLINE · 12:00</small><div style="font-size:25px;font-weight:900;margin-top:6px" id="phoneTitle">A7 PHONE</div></div><div id="phoneBody"></div><div id="phoneFooter"><button id="phoneHome">⌂ Home</button><button id="phoneBack">‹ Orqaga</button><button id="phoneClose">✕ Yopish</button></div></div>
 <div id="equip"><div class="eqpanel"><div style="letter-spacing:.14em;color:#f0c785">F1 · A7 ASBOBLAR</div><div style="font-size:23px;font-weight:900">KASHFIYOT JIHOZLARI</div><div style="font-size:31px">📷 🧭 🔦</div><p style="color:#b4c6d4">Kamera · Kompas · Fonar · Xarita</p><small>F1 yoki ESC bilan yopish</small></div></div>
 <div id="desktopOnly"><h2>CYH I · Desktop Alpha</h2><p>Bu versiya kompyuter uchun tayyorlangan. Telefon versiyasini keyin yaratamiz.</p></div>
-<script src="./terrain.js?v=20261119b"></script>
+<script src="./terrain.js?v=20261119-uzborder"></script>
 <script>const MAP_DATA={regions:[["Toshkent sh.",["WEIPWPIcWhIWWbITWfIMWUIEWKIGWEIP","WOIMWYIMWOIM"]],["Namangan viloyati",["YDIOYOIcYhIjYqIbYrIHYyINY9IEZEIHZNICZXIHZcH-ZoH_ZtIEZtIRaAIWaEIeZ8IkaJIraGIeaPIgadIRaWIIaZIFarIAa1IEa5H3awHpaGHpZcHNZLHVZNHcYsHYYlHdYLH4YQH-YIIDYJIOYDIO","YTHzYfHrYTHz"]],["Toshkent viloyati",["VUHuVfHyVbH3VkIAV7IKV6IYWIIbWHIfWPIiWmIiWgInWlIsWvItW2I2XUI7XcJFXhJCX-JVX8JcYBJfYMJjYbJaYnJrZDJ1ZbJtY_JbYzJdYvJQYeJPYOI8XxIxXtIoX6IoYOIcYDIPYJIOYIIDYQH-YBH0YBHqXpHiXjHcXHHWXAHPWpHhWhHbWbHdWbHLWNHHWaGyWXGsWRGuWWGjWJGlWAGwWEG7WDHDV-HCWDHJV-HJV-HQV3HQVsHeVbHmVUHu","WEIPWPIcWhIWWbITWfIMWUIEWKIGWEIP","WOIMWYIMWOIM","WnIdWjIcWnId"]],["Fargʻona viloyati",["X9G-YCG3YWGyYWGnYbGiY1GnY2GvZbGyZ4GmaDGraJGfaUGpapGsahGwa8HGaBHbZ7HPZyHZZ6HbZ5HdZcHNZLHVZNHcY-HcYqHYYMHCX9G-","ZBGYZAGiZFGiZMGSZUGTZNGMZVGLZUGFZGGGZLGSZBGY","aLGOaWGOaLGJaHGNaLGO"]],["Andijon viloyati",["Z5HdZ6HbZyHZZ7HPaBHbaaHPatHOa8HGa6HBbAG7bNG4bQG_bKHEbOHIbHHMbNHObUHHbmHDbmHLbwHJb5HXcXHicKHlcCHgb3HmbfHnbbHwbHH6a2H0awHpaGHpZ5HjZ5Hd"]],["Sirdaryo viloyati",["UhGrVUGqVSGhWJGlV_GwWEG7WDHDV-HCWBHNVzHTVsHeVbHmVTHxVXHzVRH3VGHxVOHsVOHXVUHVVSHPVWHMVEHJUtHUUjHEUpG6UdGwUhGr"]],["Jizzax viloyati",["SMH_T6IGURIDUSH2UcH8UhH4UaH1UeHuUSHjUtHUUiHCUnHBUpG6UdGwUhGrUxGpVUGqVSGhVJGcVTGYV6GfV0GYV2GUVqGVVyGIVpGCVmGPVnGFVjGAVhGDVUGBVUF6VPF0VSFsVIFhUfFkT_FuTgFnTYFuTWF2TmF-TZGIS1GNS1GZSpGdSvGjSkGqSlHBSNHASbHkSZHqSNHrSNH3SMH_"]],["Navoiy viloyati",["KvI6KdJMKdJNLAJdK9JiK0J6K7KOLsLWLXLaK8LvLULwNDL9N2L4O5L1PhMGPoMEP6LuQgLZQ8KuRWK2RWKRRTJ6RMJ8RMJSSBJMSJIlSNIXSTICSXICSYIASMH_SNH3SNHrSZHqSaHaSNHBSIHCSDHOR5HKRkHNRZGgRgGgRZGWQ9GRQrGWQdGhQUGWQZGTQWGGP0GHP_F7P7FoQCFdP2FaPxFmPqFmPqFxPTF2PBGIPeGhPaGlPbGzP3GvQBHFQJHFQOHEQOHTPdHYPcHYPVHbPPHvPKHmOxHlOvHdOvHcOeHeOMHfOMHsOIHvOGHvN1HaNoHYNnHeNPHtMeH3MWIJMBIVL-IYL3IjLLIdKvI6"]],["Samarqand viloyati",["P0GHP-F9QAFyP7FoQCFdQ8FfRJFORTFLRlFWRrFRR0FUR-FPSWFZSlFUSjFJSyFIS5FPTfFMTeFaTXFgTiFmTYFuTWF2TmF-TZGIS1GNS1GZSpGdSvGjSkGqSlHBSOG_SDHOR5HKRkHNRZGgRgGgRZGWQ9GRQrGWQdGhQUGWQZGTQWGGP0GH"]],["Qashqadaryo viloyati",["OrEnO4E0PdE8PYFHP1FbQrFcQzFgQ8FfRQFMRlFWRrFRR0FUR-FPSWFZSlFUSjFJSyFIS5FPTQFLTSFDT0E7T1EvTgEqTmEeTjEPTRENS6DySfDjSeDYSIDIRzDLRlDYRDDkQeDlOrEn"]],["Surxondaryo viloyati",["SBCMSHCSSBCaSDCzSRDASRDFSIDISeDYSfDjS6DyTRENTjEPTmEeThEqUTEwUfEuUnEmUoEeUbEZUhERUaEPUdEIUaD9UgD3UaDvUiDxU8DaUvC_UiDBUVCqUGCkT_COUECFT_B3TiB_TKB2S1CKSrCMSNCESBCM"]],["Buxoro viloyati",["LLIdLpH-LTH1LpHiLpHfLnHZLdHQLMHHLfG8LkGaLtGLOWEoOlEsOnEqOrEnO4E0PdE8PYFHP1FbPxFmPqFmPqFxPTF2PBGIPeGhPaGlPbGzP3GvQBHFQJHFQOHEQOHTPdHYPcHYPVHbPPHvPKHmOxHlOvHdOvHcOeHeOMHfOMHsOIHvOGHvN1HaNoHYNnHeNPHtMeH3MWIJMBIVL-IYL3IjLLId"]],["Xorazm viloyati",["IDIaH7IiIGIxH5I_H9JFIUI_IEJJICJRITJYIiJSIoJCI1I_I6I2KAIIJwIDJbIPJbIKJBIOIlIKIDIa","KAIKKBIRKXIOKwH_K8HxK7HkLKHHLnHZLpHfLpHiLTH1LNHyKkITKBIYKAIK"]],["Qoraqalpogʻiston Respublikasi",["BkNMBkOEFnO_GPOpI-NgJjNEJmM3K8LvLXLaLsLWK7KOK0J6K9JiLAJdKdJMLpH-LNHyKkITKaIVKVIXKBIYKBIJJ7IJI6I2I1I_IoJCIfJUITJYIJJRIEJTIEJKHuJUHtJZH2JXH5JhHvJmH2JoH1JtHpJ2G7J1GuJ8GhKNGRKNFrKoFtKhFnKYFIKdE8KWFLKPFgJzFUJ1FMKFE5KEE5KJEwKKEqKIEpKDEjKFElJxEdJxEdJpDsJmDgJhDVJSDIJODFI3DLIhDRIZDYIZDMIOBkIUBkNM"]]],cities:[
 ["Toshkent",69.28,41.31,0],["Namangan",71.67,41.00,1],["Chortoq",71.82,41.07,1],["Chust",71.24,41.00,1],["Pop",71.10,40.87,1],
 ["Chirchiq",69.59,41.47,2],["Angren",70.14,41.02,2],["Olmaliq",69.60,40.85,2],["Bekobod",68.94,40.22,2],["Nurafshon",69.36,41.04,2],
@@ -359,7 +359,7 @@ function setupPlaceControls(){document.getElementById('loadRealPlaces').onclick=
 function roadDist(x){const m=((x%ROAD)+ROAD)%ROAD;return Math.min(m,ROAD-m)}
 function pavement(x,z){return roadDist(x)<12||roadDist(z)<12}
 function buildingBlock(x,z){return false}
-function isWalkable(x,z){return Math.abs(x)<25000&&Math.abs(z)<25000&&!buildingBlock(x,z)}
+function isWalkable(x,z){return Math.abs(x)<2500000&&Math.abs(z)<2500000&&!buildingBlock(x,z)&&(!window.CYH_TERRAIN||CYH_TERRAIN.inside(x,z))}
 function cityDensity(x,z){const d=Math.hypot(x,z);return d<200?1:d<380?.68:.42}
 function shopSign(mesh,x,z,w){mesh.box(x,4.65,z+11.9,w,2.3,.4,'#faf9ef');mesh.box(x,5.95,z+12,w+.25,.12,.56,'#dce3d9');}
 function makeHouse(m,x,z,rand,tall=false,shop=false){const w=tall?25:18+rand()*6,d=tall?23:15+rand()*5,h=tall?20+rand()*36:(rand()>.82?11:6)+rand()*3;const walls=['#d9d0b9','#e4d5c2','#dad7c8','#c7c5b2','#e1daca','#bdbbaa','#bcc9c0'][Math.floor(rand()*7)];const roof=['#687c81','#9a695f','#736e68','#827e79','#738c7d'][Math.floor(rand()*5)];
@@ -945,6 +945,7 @@ function initControls(){const root=$('guideList');keyControls.forEach(([key,desc
 const ALPHABET='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
 function decodeRing(s){const pts=[];for(let i=0;i+3<s.length;i+=4){const a=(ALPHABET.indexOf(s[i])*64+ALPHABET.indexOf(s[i+1]))/100+55,b=(ALPHABET.indexOf(s[i+2])*64+ALPHABET.indexOf(s[i+3]))/100+36;pts.push([a,b])}return pts}
 const provinces=MAP_DATA.regions.map(([name,polys])=>({name,polys:polys.map(decodeRing)}));
+if(window.CYH_TERRAIN)CYH_TERRAIN.setBoundaries(provinces);
 const mapCities=MAP_DATA.cities;
 let mapSelected=6,mapW=750,mapH=515;
 function locateXY(lon,lat){return [48+(lon-55)*34.4,475-(lat-36.3)*42.8]}
@@ -1121,8 +1122,9 @@ function drawFallback(now){
  const p=state.player, gx=Math.floor(p.x/160),gz=Math.floor(p.z/160);
  for(let i=-3;i<=3;i++)for(let j=-3;j<=3;j++){
   const x=(gx+i)*160,z=(gz+j)*160;
-  const h=window.CYH_TERRAIN?.height||(()=>0);
-  fbPoly(ctx,[[x,h(x,z),z],[x+160,h(x+160,z),z],[x+160,h(x+160,z+160),z+160],[x,h(x,z+160),z+160]],'#7d9d79');
+  const h=window.CYH_TERRAIN?.height||(()=>0),inside=window.CYH_TERRAIN?.inside||(()=>true);
+  const st=20;for(let a=0;a<160;a+=st)for(let b=0;b<160;b+=st){const u=x+a,v=z+b;if(!inside(u+st/2,v+st/2))continue;
+   fbPoly(ctx,[[u,h(u,v),v],[u+st,h(u+st,v),v],[u+st,h(u+st,v+st),v+st],[u,h(u,v+st),v+st]],'#7d9d79');}
  }
  if(state.cameraMode!==4&&!state.vehicle)fbNPC(ctx,{...p,style:0,phase:0},now/1000);
  state.drawCalls=1;state.vertCount=0;
