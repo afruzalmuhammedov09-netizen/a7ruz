@@ -62,6 +62,15 @@ api.height=function(x,z){
  const h=rawElevation(x,z,true);
  return h===null||!baseReady?0:h-base;
 };
+// The collision surface must use the exact same two triangles as the visible mesh.
+// Bilinear elevation alone can put the feet below a steep terrain triangle.
+api.surfaceHeight=function(x,z){
+ const step=10, x0=Math.floor(x/step)*step,z0=Math.floor(z/step)*step;
+ const u=(x-x0)/step,v=(z-z0)/step;
+ const a=api.height(x0,z0),b=api.height(x0+step,z0),
+       c=api.height(x0+step,z0+step),d=api.height(x0,z0+step);
+ return u<=v ? a*(1-v)+d*(v-u)+c*u : a*(1-u)+b*(u-v)+c*v;
+};
 api.toCoordinates=position;
 api.drawChunk=function(m,cx,cz){
  const step=10,side=160,ox=cx*side,oz=cz*side;
