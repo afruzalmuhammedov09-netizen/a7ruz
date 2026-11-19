@@ -99,7 +99,7 @@
 .a7-vehicle-card small{font-size:9px;line-height:1.3;color:#bbcfdb}
 </style>
 </head><body>
-<canvas id="game" aria-label="CYH I 3D shahar o‘yini"></canvas><button id="roadLiveStatus" type="button" title="Yo‘llar ko‘rinmasa bosing" style="position:fixed;top:56px;left:15px;z-index:21;color:#fff;font:700 12px system-ui;background:#122a30e8;border:1px solid #8bd2b1;border-radius:6px;padding:7px 10px;cursor:pointer;display:block">HAQIQIY OSM YO‘LLAR</button><div id="demTerrainStatus" style="position:fixed;bottom:43px;right:10px;z-index:1000;color:#fff;font:700 12px system-ui;background:#182d31db;border:1px solid #8dd0a8;border-radius:6px;padding:5px 9px;pointer-events:none">DEM tog‘lar yuklanmoqda</div><div id="upgradeVersion" style="position:fixed;bottom:8px;right:10px;z-index:1000;color:#fff;font:700 12px system-ui;background:#182d31db;border:1px solid #8dd0a8;border-radius:6px;padding:5px 9px;pointer-events:none">CYH I • KENG HAQIQIY YO‘LLAR • V9</div><canvas id="castSprites" aria-label="2D tasvir qatlami, o‘chirilgan" style="display:none;position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:2"></canvas><canvas id="fx" aria-hidden="true"></canvas>
+<canvas id="game" aria-label="CYH I 3D shahar o‘yini"></canvas><button id="roadLiveStatus" type="button" title="Yo‘llar ko‘rinmasa bosing" style="position:fixed;top:56px;left:15px;z-index:21;color:#fff;font:700 12px system-ui;background:#122a30e8;border:1px solid #8bd2b1;border-radius:6px;padding:7px 10px;cursor:pointer;display:block">HAQIQIY OSM YO‘LLAR</button><div id="demTerrainStatus" style="position:fixed;bottom:43px;right:10px;z-index:1000;color:#fff;font:700 12px system-ui;background:#182d31db;border:1px solid #8dd0a8;border-radius:6px;padding:5px 9px;pointer-events:none">DEM tog‘lar yuklanmoqda</div><div id="upgradeVersion" style="position:fixed;bottom:8px;right:10px;z-index:1000;color:#fff;font:700 12px system-ui;background:#182d31db;border:1px solid #8dd0a8;border-radius:6px;padding:5px 9px;pointer-events:none">CYH I • MILTILLASHSIZ YO‘LLAR • V10</div><canvas id="castSprites" aria-label="2D tasvir qatlami, o‘chirilgan" style="display:none;position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:2"></canvas><canvas id="fx" aria-hidden="true"></canvas>
 <div id="hud" class="hidden"><div id="brandCorner">A7 <span>★★★★</span></div><div id="identity"><div class="money" id="money">1 000 000 SO‘M</div><div class="heroHudName" id="heroHudName">SAYOHATCHI · PERSONAJLAR [F3]</div><div class="stars" id="wanted">☆☆☆☆</div></div><div id="clock">12:00 · KUZ</div><div id="missionSmall">CYH I · VIRTUAL O‘ZBEKISTON</div><canvas id="mini" width="196" height="176"></canvas><div id="bars"><div id="healthbar"></div><div id="armorbar"></div></div><div id="street">JIZZAX · MARKAZIY KO‘CHA</div><div id="vehicleHud"><strong id="speedText">0</strong> km/soat<br><span id="fuelText">Yoqilg‘i: 100%</span></div><div id="prompt"></div><div id="toast"></div></div>
 
 <div id="studioIntro" class="hidden" aria-label="A7 Games logotip animatsiyasi">
@@ -260,31 +260,32 @@ function addRoadMesh(mesh,seg){
  const [[ax,az],[bx,bz]]=seg.points,dx=bx-ax,dz=bz-az,len=Math.hypot(dx,dz);
  if(len<.4)return;
  const nx=-dz/len,nz=dx/len,wide=seg.width*.5;
- const ground=(x,z)=>window.CYH_TERRAIN?.surfaceHeight(x,z)||0;
- const point=(x,z,offset=.21)=>[x,ground(x,z)+offset,z];
- const subdivisions=Math.min(90,Math.max(1,Math.ceil(len/5)));
- for(let i=0;i<subdivisions;i++){
-  const t=i/subdivisions,u=(i+1)/subdivisions;
+ const height=(x,z)=>window.CYH_TERRAIN?.surfaceHeight(x,z)||0;
+ const p=(x,z,h)=>[x,height(x,z)+h,z];
+ const quad=(x1,z1,x2,z2,lo,hi,col,h)=>{
+  mesh.quad(p(x1+nx*hi,z1+nz*hi,h),p(x2+nx*hi,z2+nz*hi,h),
+   p(x2+nx*lo,z2+nz*lo,h),p(x1+nx*lo,z1+nz*lo,h),col);
+ };
+ // Keep all road layers well separated vertically so the depth buffer cannot flicker.
+ const segments=Math.min(100,Math.max(1,Math.ceil(len/3.5)));
+ const shoulder=seg.kind==='motorway'||seg.kind==='trunk'?2.3:seg.kind==='path'?.35:1.25;
+ const driving=!['track','pedestrian','path'].includes(seg.kind);
+ const asphalt=seg.kind==='track'?'#746f5d':driving?'#343b43':'#b2aca0';
+ for(let i=0;i<segments;i++){
+  const t=i/segments,u=(i+1)/segments;
   const x1=ax+dx*t,z1=az+dz*t,x2=ax+dx*u,z2=az+dz*u;
-  if(window.CYH_TERRAIN&&!CYH_TERRAIN.inside((x1+x2)/2,(z1+z2)/2))continue;
-  // Shoulder and bright GTA-style road boundaries, following the unchanged true OSM centerline.
-  const shoulder=seg.kind==='motorway'||seg.kind==='trunk'?2.3:seg.kind==='path'?.35:1.25;
-  mesh.quad(point(x1+nx*(wide+shoulder),z1+nz*(wide+shoulder),.19),point(x2+nx*(wide+shoulder),z2+nz*(wide+shoulder),.19),
-   point(x2-nx*(wide+shoulder),z2-nz*(wide+shoulder),.19),point(x1-nx*(wide+shoulder),z1-nz*(wide+shoulder),.19),'#898f92');
-  mesh.quad(point(x1+nx*wide,z1+nz*wide),point(x2+nx*wide,z2+nz*wide),
-   point(x2-nx*wide,z2-nz*wide),point(x1-nx*wide,z1-nz*wide),
-   seg.kind==='track'?'#746f5d':seg.kind==='pedestrian'||seg.kind==='path'?'#b2aca0':'#343b43');
-  if(!['track','pedestrian','path'].includes(seg.kind)){
-   const line=.16,edge=wide-.46;
-   mesh.quad(point(x1+nx*(edge+line),z1+nz*(edge+line),.30),point(x2+nx*(edge+line),z2+nz*(edge+line),.30),
-    point(x2+nx*edge,z2+nz*edge,.30),point(x1+nx*edge,z1+nz*edge,.30),'#f5f1e6');
-   mesh.quad(point(x1-nx*edge,z1-nz*edge,.30),point(x2-nx*edge,z2-nz*edge,.30),
-    point(x2-nx*(edge+line),z2-nz*(edge+line),.30),point(x1-nx*(edge+line),z1-nz*(edge+line),.30),'#f5f1e6');
-  }
-  if(['motorway','trunk','primary','secondary','tertiary'].includes(seg.kind)&&i%3!==2){
-    const w=.085;
-    mesh.quad(point(x1+nx*w,z1+nz*w,.27),point(x2+nx*w,z2+nz*w,.27),
-      point(x2-nx*w,z2-nz*w,.27),point(x1-nx*w,z1-nz*w,.27),'#e8d6a1');
+  if(window.CYH_TERRAIN&&!CYH_TERRAIN.inside((x1+x2)*.5,(z1+z2)*.5))continue;
+  // Shoulder exists ONLY outside the asphalt, not as a second overlapping white road.
+  quad(x1,z1,x2,z2,wide,wide+shoulder,'#777c7f',.27);
+  quad(x1,z1,x2,z2,-wide-shoulder,-wide,'#777c7f',.27);
+  quad(x1,z1,x2,z2,-wide,wide,asphalt,.60);
+  if(driving){
+   const edge=wide-.48,w=.16;
+   quad(x1,z1,x2,z2,edge,edge+w,'#ebe9df',.79);
+   quad(x1,z1,x2,z2,-edge-w,-edge,'#ebe9df',.79);
+   if(['motorway','trunk','primary','secondary','tertiary'].includes(seg.kind)&&Math.floor(i/3)%2===0){
+    quad(x1,z1,x2,z2,-.11,.11,'#e9cb79',.84);
+   }
   }
  }
 }
