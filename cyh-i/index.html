@@ -99,7 +99,7 @@
 .a7-vehicle-card small{font-size:9px;line-height:1.3;color:#bbcfdb}
 </style>
 </head><body>
-<canvas id="game" aria-label="CYH I 3D shahar o‘yini"></canvas><button id="roadLiveStatus" type="button" title="Yo‘llar ko‘rinmasa bosing" style="position:fixed;top:56px;left:15px;z-index:21;color:#fff;font:700 12px system-ui;background:#122a30e8;border:1px solid #8bd2b1;border-radius:6px;padding:7px 10px;cursor:pointer;display:block">HAQIQIY OSM YO‘LLAR</button><div id="demTerrainStatus" style="position:fixed;bottom:43px;right:10px;z-index:1000;color:#fff;font:700 12px system-ui;background:#182d31db;border:1px solid #8dd0a8;border-radius:6px;padding:5px 9px;pointer-events:none">DEM tog‘lar yuklanmoqda</div><div id="upgradeVersion" style="position:fixed;bottom:8px;right:10px;z-index:1000;color:#fff;font:700 12px system-ui;background:#182d31db;border:1px solid #8dd0a8;border-radius:6px;padding:5px 9px;pointer-events:none">CYH I • REAL O‘ZBEKISTON YO‘LLARI • V8</div><canvas id="castSprites" aria-label="2D tasvir qatlami, o‘chirilgan" style="display:none;position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:2"></canvas><canvas id="fx" aria-hidden="true"></canvas>
+<canvas id="game" aria-label="CYH I 3D shahar o‘yini"></canvas><button id="roadLiveStatus" type="button" title="Yo‘llar ko‘rinmasa bosing" style="position:fixed;top:56px;left:15px;z-index:21;color:#fff;font:700 12px system-ui;background:#122a30e8;border:1px solid #8bd2b1;border-radius:6px;padding:7px 10px;cursor:pointer;display:block">HAQIQIY OSM YO‘LLAR</button><div id="demTerrainStatus" style="position:fixed;bottom:43px;right:10px;z-index:1000;color:#fff;font:700 12px system-ui;background:#182d31db;border:1px solid #8dd0a8;border-radius:6px;padding:5px 9px;pointer-events:none">DEM tog‘lar yuklanmoqda</div><div id="upgradeVersion" style="position:fixed;bottom:8px;right:10px;z-index:1000;color:#fff;font:700 12px system-ui;background:#182d31db;border:1px solid #8dd0a8;border-radius:6px;padding:5px 9px;pointer-events:none">CYH I • KENG HAQIQIY YO‘LLAR • V9</div><canvas id="castSprites" aria-label="2D tasvir qatlami, o‘chirilgan" style="display:none;position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:2"></canvas><canvas id="fx" aria-hidden="true"></canvas>
 <div id="hud" class="hidden"><div id="brandCorner">A7 <span>★★★★</span></div><div id="identity"><div class="money" id="money">1 000 000 SO‘M</div><div class="heroHudName" id="heroHudName">SAYOHATCHI · PERSONAJLAR [F3]</div><div class="stars" id="wanted">☆☆☆☆</div></div><div id="clock">12:00 · KUZ</div><div id="missionSmall">CYH I · VIRTUAL O‘ZBEKISTON</div><canvas id="mini" width="196" height="176"></canvas><div id="bars"><div id="healthbar"></div><div id="armorbar"></div></div><div id="street">JIZZAX · MARKAZIY KO‘CHA</div><div id="vehicleHud"><strong id="speedText">0</strong> km/soat<br><span id="fuelText">Yoqilg‘i: 100%</span></div><div id="prompt"></div><div id="toast"></div></div>
 
 <div id="studioIntro" class="hidden" aria-label="A7 Games logotip animatsiyasi">
@@ -232,7 +232,7 @@ window.CYH_REAL_ROAD_CONTEXT=()=>{const c=currentCityGeo();return {city:state.ci
 window.CYH_REAL_ROAD_STATUS=(message,error)=>setRoadLoadingStatus(message,error);
 window.CYH_REAL_ROAD_APPLY=(features,source)=>{REAL_ROADS.center=currentCityGeo();prepareRoads(features,source)};
 const HIGHWAY_TYPES=new Set(['motorway','trunk','primary','secondary','tertiary','minor','unclassified','residential','living_street','service','pedestrian','path','busway','track','road']);
-const highwayWidth={motorway:15,trunk:13,primary:12,secondary:10,tertiary:9,minor:6.3,unclassified:7,residential:6.5,living_street:5.2,service:4.6,pedestrian:4,path:2.2,busway:7,track:3.8,road:6};
+const highwayWidth={motorway:24,trunk:22,primary:21,secondary:18,tertiary:16,minor:12,unclassified:13,residential:13,living_street:11,service:9,pedestrian:7,path:4.5,busway:14,track:7,road:12};
 function currentCityGeo(){return mapCities.find(c=>c[0]===state.city)||mapCities.find(c=>c[0]==='Jizzax')}
 function geoToMeters(lon,lat){const c=REAL_ROADS.center||currentCityGeo();return [(lon-c[1])*111320*Math.cos(c[2]*Math.PI/180),(lat-c[2])*111320]}
 function roadPointDist(x,z,ax,az,bx,bz){const dx=bx-ax,dz=bz-az,len=dx*dx+dz*dz||1,t=clamp(((x-ax)*dx+(z-az)*dz)/len,0,1);return Math.hypot(x-(ax+t*dx),z-(az+t*dz))}
@@ -267,9 +267,20 @@ function addRoadMesh(mesh,seg){
   const t=i/subdivisions,u=(i+1)/subdivisions;
   const x1=ax+dx*t,z1=az+dz*t,x2=ax+dx*u,z2=az+dz*u;
   if(window.CYH_TERRAIN&&!CYH_TERRAIN.inside((x1+x2)/2,(z1+z2)/2))continue;
+  // Shoulder and bright GTA-style road boundaries, following the unchanged true OSM centerline.
+  const shoulder=seg.kind==='motorway'||seg.kind==='trunk'?2.3:seg.kind==='path'?.35:1.25;
+  mesh.quad(point(x1+nx*(wide+shoulder),z1+nz*(wide+shoulder),.19),point(x2+nx*(wide+shoulder),z2+nz*(wide+shoulder),.19),
+   point(x2-nx*(wide+shoulder),z2-nz*(wide+shoulder),.19),point(x1-nx*(wide+shoulder),z1-nz*(wide+shoulder),.19),'#898f92');
   mesh.quad(point(x1+nx*wide,z1+nz*wide),point(x2+nx*wide,z2+nz*wide),
    point(x2-nx*wide,z2-nz*wide),point(x1-nx*wide,z1-nz*wide),
-   seg.kind==='track'?'#746f5d':seg.kind==='pedestrian'?'#b2aca0':'#41474d');
+   seg.kind==='track'?'#746f5d':seg.kind==='pedestrian'||seg.kind==='path'?'#b2aca0':'#343b43');
+  if(!['track','pedestrian','path'].includes(seg.kind)){
+   const line=.16,edge=wide-.46;
+   mesh.quad(point(x1+nx*(edge+line),z1+nz*(edge+line),.30),point(x2+nx*(edge+line),z2+nz*(edge+line),.30),
+    point(x2+nx*edge,z2+nz*edge,.30),point(x1+nx*edge,z1+nz*edge,.30),'#f5f1e6');
+   mesh.quad(point(x1-nx*edge,z1-nz*edge,.30),point(x2-nx*edge,z2-nz*edge,.30),
+    point(x2-nx*(edge+line),z2-nz*(edge+line),.30),point(x1-nx*(edge+line),z1-nz*(edge+line),.30),'#f5f1e6');
+  }
   if(['motorway','trunk','primary','secondary','tertiary'].includes(seg.kind)&&i%3!==2){
     const w=.085;
     mesh.quad(point(x1+nx*w,z1+nz*w,.27),point(x2+nx*w,z2+nz*w,.27),
@@ -1001,7 +1012,7 @@ function draw3D(now){if(!gl){drawFallback(now);return}resize();const [eye,target
 function drawMinimap(){
  mini.clearRect(0,0,196,176);
  mini.fillStyle='#75966d';mini.fillRect(0,0,196,176);
- mini.fillStyle='#fff';mini.font='bold 12px sans-serif';mini.fillText('HAQIQIY OSM YO‘LLAR',16,22);
+ mini.fillStyle='#fff';mini.font='bold 12px sans-serif';mini.fillText('KENG OSM YO‘LLAR',18,22);
  mini.save();mini.translate(98,88);mini.rotate(-state.yaw);
  if(REAL_ROADS.ready)drawRealRoadsMinimap();
  mini.fillStyle='#f2f2e8';mini.beginPath();mini.moveTo(0,-12);mini.lineTo(-8,10);mini.lineTo(0,5);mini.lineTo(8,10);mini.closePath();mini.fill();mini.restore();
