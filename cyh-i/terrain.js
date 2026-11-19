@@ -4,6 +4,10 @@
 const Z=12,N=2**Z,T=256,cache=new Map();
 let city='',lat0=40.115,lon0=67.842,base=0,baseReady=false,pending=0,failed=0;
 const api={onChange:null,city:'',ready:false,source:'Mapzen/AWS Terrarium DEM'};
+let bounds=[];
+const regionContains=(lon,lat,ring)=>{let inside=false;for(let i=0,j=ring.length-1;i<ring.length;j=i++){const a=ring[i],b=ring[j];if((a[1]>lat)!==(b[1]>lat)&&lon<(b[0]-a[0])*(lat-a[1])/(b[1]-a[1])+a[0])inside=!inside}return inside};
+api.setBoundaries=function(regions){bounds=(regions||[]).flatMap(r=>r.polys||[]).filter(p=>p.length>2)};
+api.inside=function(x,z){if(!bounds.length)return true;const {lon,lat}=position(x,z);return bounds.some(r=>regionContains(lon,lat,r))};
 function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
 function tileXY(lon,lat){lat=clamp(lat,-85,85);const sin=Math.sin(lat*Math.PI/180);return {x:(lon+180)/360*N,y:(1-Math.log((1+sin)/(1-sin))/(2*Math.PI))/2*N}}
 function position(x,z){return {lon:lon0+x/(111320*Math.cos(lat0*Math.PI/180)),lat:lat0+z/111320}}
@@ -64,7 +68,9 @@ api.drawChunk=function(m,cx,cz){
  // Terrain triangles preserve DEM ridge shapes and actual geographic positions.
  const cells=side/step;
  for(let i=0;i<cells;i++)for(let j=0;j<cells;j++){
-  const x=ox+i*step,z=oz+j*step,vertices=[
+  const x=ox+i*step,z=oz+j*step;
+  if(!api.inside(x+step*.5,z+step*.5))continue;
+  const vertices=[
    [x,api.height(x,z),z],[x+step,api.height(x+step,z),z],
    [x+step,api.height(x+step,z+step),z+step],[x,api.height(x,z+step),z+step]
   ];
@@ -73,6 +79,6 @@ api.drawChunk=function(m,cx,cz){
   m.quad(vertices[0],vertices[3],vertices[2],vertices[1],col);
  }
 };
-api.status=function(){return {city,ready:baseReady,pending,failed,base}};
+api.status=function(){return {city,ready:baseReady,pending,failed,base,boundaries:bounds.length}};
 window.CYH_TERRAIN=api;
 })();
