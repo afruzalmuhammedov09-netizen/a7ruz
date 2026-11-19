@@ -99,7 +99,7 @@
 .a7-vehicle-card small{font-size:9px;line-height:1.3;color:#bbcfdb}
 </style>
 </head><body>
-<canvas id="game" aria-label="CYH I 3D shahar o‘yini"></canvas><div id="demTerrainStatus" style="position:fixed;bottom:43px;right:10px;z-index:1000;color:#fff;font:700 12px system-ui;background:#182d31db;border:1px solid #8dd0a8;border-radius:6px;padding:5px 9px;pointer-events:none">DEM tog‘lar yuklanmoqda</div><div id="upgradeVersion" style="position:fixed;bottom:8px;right:10px;z-index:1000;color:#fff;font:700 12px system-ui;background:#182d31db;border:1px solid #8dd0a8;border-radius:6px;padding:5px 9px;pointer-events:none">CYH I • TOG‘ + HAQIQIY YO‘LLAR • V5</div><canvas id="castSprites" aria-label="2D tasvir qatlami, o‘chirilgan" style="display:none;position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:2"></canvas><canvas id="fx" aria-hidden="true"></canvas>
+<canvas id="game" aria-label="CYH I 3D shahar o‘yini"></canvas><button id="roadLiveStatus" type="button" title="Yo‘llar ko‘rinmasa bosing" style="position:fixed;top:56px;left:15px;z-index:21;color:#fff;font:700 12px system-ui;background:#122a30e8;border:1px solid #8bd2b1;border-radius:6px;padding:7px 10px;cursor:pointer;display:block">OSM yo‘llar: yuklanmoqda</button><div id="demTerrainStatus" style="position:fixed;bottom:43px;right:10px;z-index:1000;color:#fff;font:700 12px system-ui;background:#182d31db;border:1px solid #8dd0a8;border-radius:6px;padding:5px 9px;pointer-events:none">DEM tog‘lar yuklanmoqda</div><div id="upgradeVersion" style="position:fixed;bottom:8px;right:10px;z-index:1000;color:#fff;font:700 12px system-ui;background:#182d31db;border:1px solid #8dd0a8;border-radius:6px;padding:5px 9px;pointer-events:none">CYH I • REAL OSM YO‘LLAR • V6</div><canvas id="castSprites" aria-label="2D tasvir qatlami, o‘chirilgan" style="display:none;position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:2"></canvas><canvas id="fx" aria-hidden="true"></canvas>
 <div id="hud" class="hidden"><div id="brandCorner">A7 <span>★★★★</span></div><div id="identity"><div class="money" id="money">1 000 000 SO‘M</div><div class="heroHudName" id="heroHudName">SAYOHATCHI · PERSONAJLAR [F3]</div><div class="stars" id="wanted">☆☆☆☆</div></div><div id="clock">12:00 · KUZ</div><div id="missionSmall">CYH I · VIRTUAL O‘ZBEKISTON</div><canvas id="mini" width="196" height="176"></canvas><div id="bars"><div id="healthbar"></div><div id="armorbar"></div></div><div id="street">JIZZAX · MARKAZIY KO‘CHA</div><div id="vehicleHud"><strong id="speedText">0</strong> km/soat<br><span id="fuelText">Yoqilg‘i: 100%</span></div><div id="prompt"></div><div id="toast"></div></div>
 
 <div id="studioIntro" class="hidden" aria-label="A7 Games logotip animatsiyasi">
@@ -249,7 +249,7 @@ function prepareRoads(data,source){
  REAL_ROADS.ways=list;REAL_ROADS.segments=segments;REAL_ROADS.ready=true;REAL_ROADS.source=source;REAL_ROADS.city=state.city;
  rebuildRealRoadBuffer();destroyChunks();makeAgents();refreshChunks();
  const status=document.getElementById('osmRoadStatus');if(status)status.textContent='✅ '+state.city+' · '+list.length+' yo‘l, '+segments.length+' bo‘lak · '+source;
- notify('Haqiqiy yo‘llar yuklandi: '+list.length+' ta. Bino modellar hali namunaviy.');
+ notify('Haqiqiy OSM yo‘llari yuklandi: '+list.length+' ta.');
 }
 function resetRealRoads(){REAL_ROADS.ready=false;REAL_ROADS.ways=[];REAL_ROADS.segments=[];REAL_ROADS.city='';if(REAL_ROADS.buffer&&gl)gl.deleteBuffer(REAL_ROADS.buffer);REAL_ROADS.buffer=null;REAL_ROADS.verts=0;destroyChunks();makeAgents();refreshChunks();const s=document.getElementById('osmRoadStatus');if(s)s.textContent='Hozir: namunaviy ko‘chalar.'}
 function addRoadMesh(mesh,seg){
@@ -292,12 +292,77 @@ function rebuildRealRoadBuffer(){
 }
 
 function roadTestNear(x,z){if(!REAL_ROADS.ready)return false;return REAL_ROADS.segments.some(seg=>{const [a,b]=seg.points;return roadPointDist(x,z,...a,...b)<seg.width*.5+3})}
-async function fetchCityRoads(){if(REAL_ROADS.loading)return;const c=currentCityGeo();REAL_ROADS.center=c;const lat=c[2],lon=c[1];const south=(lat-.012).toFixed(5),west=(lon-.016).toFixed(5),north=(lat+.012).toFixed(5),east=(lon+.016).toFixed(5);
- const query='[out:json][timeout:30];way["highway"~"^(motorway|trunk|primary|secondary|tertiary|unclassified|residential|living_street|service|pedestrian|track)$"]('+south+','+west+','+north+','+east+');out geom;';
- const status=document.getElementById('osmRoadStatus');REAL_ROADS.loading=true;status.textContent='⏳ '+state.city+' yo‘llari olinmoqda (internet kerak)...';
- const urls=['https://overpass.kumi.systems/api/interpreter','https://overpass-api.de/api/interpreter'];let lastErr='';
- try{for(const u of urls){try{const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),28000);let res;try{res=await fetch(u+'?data='+encodeURIComponent(query),{signal:ctl.signal})}finally{clearTimeout(timer)}if(!res.ok)throw Error('HTTP '+res.status);prepareRoads(await res.json(),'© OpenStreetMap contributors');return}catch(e){lastErr=e.message}}status.textContent='⚠ Internet yoki OSM serveridan yo‘llar kelmadi: '+lastErr+' · GeoJSON import qiling';notify('OSM yuklanmadi. GeoJSON ochishingiz mumkin.')}finally{REAL_ROADS.loading=false}}
-function setupRoadControls(){document.getElementById('fetchOSMRoads').onclick=fetchCityRoads;document.getElementById('importOSMRoads').onclick=()=>document.getElementById('osmRoadFile').click();document.getElementById('clearOSMRoads').onclick=resetRealRoads;
+function setRoadLoadingStatus(message,error=false){
+ const el=document.getElementById('roadLiveStatus');
+ if(el){el.textContent=message;el.style.borderColor=error?'#f4a5a5':'#8bd2b1'}
+ const other=document.getElementById('osmRoadStatus');if(other)other.textContent=message;
+}
+function xmlOSMRoads(xml){
+ const nodes=new Map();
+ for(const n of xml.getElementsByTagName('node'))nodes.set(n.getAttribute('id'),[
+   Number(n.getAttribute('lon')),Number(n.getAttribute('lat'))]);
+ const elements=[];
+ for(const w of xml.getElementsByTagName('way')){
+  let kind='',name='';for(const tag of w.getElementsByTagName('tag')){
+   if(tag.getAttribute('k')==='highway')kind=tag.getAttribute('v');
+   if(tag.getAttribute('k')==='name')name=tag.getAttribute('v');
+  }
+  if(!HIGHWAY_TYPES.has(kind))continue;
+  const geometry=[];
+  for(const nd of w.getElementsByTagName('nd')){
+   const p=nodes.get(nd.getAttribute('ref'));if(p)geometry.push({lon:p[0],lat:p[1]});
+  }
+  if(geometry.length>1)elements.push({type:'way',tags:{highway:kind,name},geometry});
+ }
+ return {elements};
+}
+async function fetchCityRoads(){
+ if(REAL_ROADS.loading)return;
+ const cityAtStart=state.city,c=currentCityGeo();REAL_ROADS.center=c;
+ const lat=c[2],lon=c[1],south=(lat-.009).toFixed(5),west=(lon-.012).toFixed(5),
+       north=(lat+.009).toFixed(5),east=(lon+.012).toFixed(5);
+ const query='[out:json][timeout:24];way["highway"~"^(motorway|trunk|primary|secondary|tertiary|unclassified|residential|living_street|service|pedestrian|track|road)$"]('+south+','+west+','+north+','+east+');out geom;';
+ const endpoints=[
+  {url:'https://overpass.kumi.systems/api/interpreter',mode:'post'},
+  {url:'https://overpass-api.de/api/interpreter',mode:'post'},
+  {url:'https://overpass.nchc.org.tw/api/interpreter',mode:'post'},
+  {url:'https://api.openstreetmap.org/api/0.6/map?bbox='+[west,south,east,north].join(','),mode:'xml'}
+ ];
+ REAL_ROADS.loading=true;setRoadLoadingStatus('OSM yo‘llari yuklanmoqda · '+cityAtStart);
+ let errors=[];
+ try{
+  for(let k=0;k<endpoints.length;k++){
+   if(state.city!==cityAtStart)return;
+   const item=endpoints[k],ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),13000);
+   try{
+    let response;
+    if(item.mode==='xml')response=await fetch(item.url,{signal:ctl.signal});
+    else response=await fetch(item.url,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},
+      body:'data='+encodeURIComponent(query),signal:ctl.signal});
+    if(!response.ok)throw Error('HTTP '+response.status);
+    const data=item.mode==='xml'?xmlOSMRoads(new DOMParser().parseFromString(await response.text(),'text/xml')):await response.json();
+    if(state.city!==cityAtStart)return;
+    prepareRoads(data,'© OpenStreetMap contributors');
+    REAL_ROADS.loading=false;setRoadLoadingStatus('YO‘LLAR: '+REAL_ROADS.ways.length+' ta · '+cityAtStart);
+    // Spawn into a real-world street if the city center is empty.
+    if(state.intro>0&&Math.hypot(state.player.x-8,state.player.z-24)<12){
+     const nearest=nearestRealRoad(state.player.x,state.player.z);
+     if(nearest&&nearest.distance>32&&nearest.distance<450){
+       state.player.x=nearest.x;state.player.z=nearest.z;prevPlayer={x:nearest.x,z:nearest.z};
+       refreshChunks();
+     }
+    }
+    return;
+   }catch(e){errors.push((item.mode==='xml'?'OSM':'Overpass')+': '+e.message);
+    setRoadLoadingStatus('Yo‘l manbasi '+(k+1)+'/'+endpoints.length+' tekshirilmoqda');
+   }finally{clearTimeout(timer)}
+  }
+  REAL_ROADS.ready=false;
+  setRoadLoadingStatus('Yo‘llar yuklanmadi · QAYTA URINISH',true);
+  console.warn('OSM manbalarida xatolar:',errors.join(' | '));
+ }finally{REAL_ROADS.loading=false}
+}
+function setupRoadControls(){const live=document.getElementById('roadLiveStatus');if(live)live.onclick=()=>fetchCityRoads();document.getElementById('fetchOSMRoads').onclick=fetchCityRoads;document.getElementById('importOSMRoads').onclick=()=>document.getElementById('osmRoadFile').click();document.getElementById('clearOSMRoads').onclick=resetRealRoads;
  document.getElementById('osmRoadFile').onchange=async e=>{const file=e.target.files?.[0];if(!file)return;REAL_ROADS.center=currentCityGeo();try{prepareRoads(JSON.parse(await file.text()),'Import: '+file.name)}catch(err){document.getElementById('osmRoadStatus').textContent='⚠ '+err.message;notify('Yo‘l faylini o‘qib bo‘lmadi: '+err.message)}finally{e.target.value=''}};}
 function drawRealRoadsFallback(ctx){
  const p=state.player,ground=(x,z)=>(window.CYH_TERRAIN?.surfaceHeight(x,z)||0)+.2;
