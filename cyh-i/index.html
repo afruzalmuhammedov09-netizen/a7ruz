@@ -231,8 +231,8 @@ const REAL_ROADS={ready:false,city:'',ways:[],segments:[],source:'',loading:fals
 window.CYH_REAL_ROAD_CONTEXT=()=>{const c=currentCityGeo();return {city:state.city,lon:c[1],lat:c[2],x:state.player.x,z:state.player.z}};
 window.CYH_REAL_ROAD_STATUS=(message,error)=>setRoadLoadingStatus(message,error);
 window.CYH_REAL_ROAD_APPLY=(features,source)=>{REAL_ROADS.center=currentCityGeo();prepareRoads(features,source)};
-const HIGHWAY_TYPES=new Set(['motorway','trunk','primary','secondary','tertiary','unclassified','residential','living_street','service','pedestrian','track','road']);
-const highwayWidth={motorway:15,trunk:13,primary:12,secondary:10,tertiary:9,unclassified:7,residential:6.5,living_street:5.2,service:4.6,pedestrian:4,track:3.8,road:6};
+const HIGHWAY_TYPES=new Set(['motorway','trunk','primary','secondary','tertiary','minor','unclassified','residential','living_street','service','pedestrian','path','busway','track','road']);
+const highwayWidth={motorway:15,trunk:13,primary:12,secondary:10,tertiary:9,minor:6.3,unclassified:7,residential:6.5,living_street:5.2,service:4.6,pedestrian:4,path:2.2,busway:7,track:3.8,road:6};
 function currentCityGeo(){return mapCities.find(c=>c[0]===state.city)||mapCities.find(c=>c[0]==='Jizzax')}
 function geoToMeters(lon,lat){const c=REAL_ROADS.center||currentCityGeo();return [(lon-c[1])*111320*Math.cos(c[2]*Math.PI/180),(lat-c[2])*111320]}
 function roadPointDist(x,z,ax,az,bx,bz){const dx=bx-ax,dz=bz-az,len=dx*dx+dz*dz||1,t=clamp(((x-ax)*dx+(z-az)*dz)/len,0,1);return Math.hypot(x-(ax+t*dx),z-(az+t*dz))}
