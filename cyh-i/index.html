@@ -49,6 +49,8 @@
 .osm-actions button{font-size:11px!important;padding:7px!important}
 </style><style id="cyh-heroes-styles">
 #loadScreen{background:#06090e!important}
+#loadingEdit{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#06090e}
+#loadScreen.playing-edit :is(.cyhHeroSlide,#heroLoadLore,#loadTitle,#loadTip,#loadMusicState){display:none}
 #loadScreen .cyhHeroSlide{opacity:0!important;animation:none!important;transition:opacity .22s ease;background-size:cover;background-position:50% 32%}
 #loadScreen .cyhHeroSlide.active{opacity:1!important;animation:cyhEditPush 3s cubic-bezier(.16,.64,.35,1) both!important}
 #loadScreen .cyhHeroSlide.active:nth-of-type(even){animation-name:cyhEditPull!important}
@@ -104,7 +106,7 @@
 .a7-vehicle-card small{font-size:9px;line-height:1.3;color:#bbcfdb}
 </style>
 </head><body>
-<canvas id="game" aria-label="CYH I 3D shahar o‘yini"></canvas><button id="roadLiveStatus" type="button" title="Yo‘llar ko‘rinmasa bosing" style="position:fixed;top:56px;left:15px;z-index:21;color:#fff;font:700 12px system-ui;background:#122a30e8;border:1px solid #8bd2b1;border-radius:6px;padding:7px 10px;cursor:pointer;display:block">HAQIQIY OSM YO‘LLAR</button><div id="houseLiveStatus" style="position:fixed;bottom:105px;right:10px;z-index:1000;color:#fff;font:700 11px system-ui;background:#182d31db;border:1px solid #8dd0a8;border-radius:6px;padding:4px 8px;pointer-events:none">HOVLI UYLAR: xaritadan yuklanmoqda</div><div id="treeLiveStatus" style="position:fixed;bottom:74px;right:10px;z-index:1000;color:#fff;font:700 11px system-ui;background:#182d31db;border:1px solid #8dd0a8;border-radius:6px;padding:4px 8px;pointer-events:none">DARAXTLAR: xaritadan yuklanmoqda</div><div id="demTerrainStatus" style="position:fixed;bottom:43px;right:10px;z-index:1000;color:#fff;font:700 12px system-ui;background:#182d31db;border:1px solid #8dd0a8;border-radius:6px;padding:5px 9px;pointer-events:none">DEM tog‘lar yuklanmoqda</div><div id="upgradeVersion" style="position:fixed;bottom:8px;right:10px;z-index:1000;color:#fff;font:700 12px system-ui;background:#182d31db;border:1px solid #8dd0a8;border-radius:6px;padding:5px 9px;pointer-events:none">CYH I • HAQIQIY HOVLI UYLAR • V16</div><canvas id="castSprites" aria-label="2D tasvir qatlami, o‘chirilgan" style="display:none;position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:2"></canvas><canvas id="fx" aria-hidden="true"></canvas>
+<canvas id="game" aria-label="CYH I 3D shahar o‘yini"></canvas><button id="roadLiveStatus" type="button" title="Yo‘llar ko‘rinmasa bosing" style="position:fixed;top:56px;left:15px;z-index:21;color:#fff;font:700 12px system-ui;background:#122a30e8;border:1px solid #8bd2b1;border-radius:6px;padding:7px 10px;cursor:pointer;display:block">HAQIQIY OSM YO‘LLAR</button><div id="houseLiveStatus" style="position:fixed;bottom:105px;right:10px;z-index:1000;color:#fff;font:700 11px system-ui;background:#182d31db;border:1px solid #8dd0a8;border-radius:6px;padding:4px 8px;pointer-events:none">HOVLI UYLAR: xaritadan yuklanmoqda</div><div id="treeLiveStatus" style="position:fixed;bottom:74px;right:10px;z-index:1000;color:#fff;font:700 11px system-ui;background:#182d31db;border:1px solid #8dd0a8;border-radius:6px;padding:4px 8px;pointer-events:none">DARAXTLAR: xaritadan yuklanmoqda</div><div id="demTerrainStatus" style="position:fixed;bottom:43px;right:10px;z-index:1000;color:#fff;font:700 12px system-ui;background:#182d31db;border:1px solid #8dd0a8;border-radius:6px;padding:5px 9px;pointer-events:none">DEM tog‘lar yuklanmoqda</div><div id="upgradeVersion" style="position:fixed;bottom:8px;right:10px;z-index:1000;color:#fff;font:700 12px system-ui;background:#182d31db;border:1px solid #8dd0a8;border-radius:6px;padding:5px 9px;pointer-events:none">CYH I • HAQIQIY HOVLI UYLAR • V17</div><canvas id="castSprites" aria-label="2D tasvir qatlami, o‘chirilgan" style="display:none;position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:2"></canvas><canvas id="fx" aria-hidden="true"></canvas>
 <div id="hud" class="hidden"><div id="brandCorner">A7 <span>★★★★</span></div><div id="identity"><div class="money" id="money">1 000 000 SO‘M</div><div class="heroHudName" id="heroHudName">SAYOHATCHI · PERSONAJLAR [F3]</div><div class="stars" id="wanted">☆☆☆☆</div></div><div id="clock">12:00 · KUZ</div><div id="missionSmall">CYH I · VIRTUAL O‘ZBEKISTON</div><canvas id="mini" width="196" height="176"></canvas><div id="bars"><div id="healthbar"></div><div id="armorbar"></div></div><div id="street">JIZZAX · MARKAZIY KO‘CHA</div><div id="vehicleHud"><strong id="speedText">0</strong> km/soat<br><span id="fuelText">Yoqilg‘i: 100%</span></div><div id="prompt"></div><div id="toast"></div></div>
 
 <div id="studioIntro" class="hidden" aria-label="A7 Games logotip animatsiyasi">
@@ -113,6 +115,7 @@
 </div>
 <div id="start"><div id="cover"></div><div id="splash"><div class="a7mark">A7</div><div class="a7stars">★★★★</div><div class="sTitle">CYH <em>I</em></div><div class="sSubtitle">CREATE YOUR HOME</div><p class="sText">O‘zbekistonning ochiq dunyo shahriga xush kelibsiz. Bu — CYH I o‘yinining internet talab qilmaydigan desktop alpha versiyasi.</p><div class="startRow"><button id="startBtn" class="primary">O‘YNASH</button></div></div></div>
 <div id="loadScreen" class="hidden" aria-live="polite">
+  <video id="loadingEdit" src="loading-edit.mp4" class="hidden" playsinline preload="auto" aria-hidden="true"></video>
   <div class="loadSlide cyhHeroSlide" data-frame="0"></div><div class="loadSlide cyhHeroSlide" data-frame="1"></div><div class="loadSlide cyhHeroSlide" data-frame="2"></div><div class="loadSlide cyhHeroSlide" data-frame="3"></div><div class="loadSlide cyhHeroSlide" data-frame="4"></div><div class="loadSlide cyhHeroSlide" data-frame="5"></div>
   <div class="loadTop"><b>A7 <span>★★★★</span></b><small>CYH I · CREATE YOUR HOME</small></div>
   <div id="heroLoadLore" aria-live="polite"><b id="heroLoadName">OG‘AJON FARXODOV</b><span id="heroLoadBio" hidden>Jizzaxlik mexanik.</span><small id="heroLoadLock"></small></div><div class="loadBottom"><strong id="loadTitle">O‘ZBEKISTONGA XUSH KELIBSIZ</strong><small id="loadTip">Katta shahar sizni kutmoqda</small><div class="loadTrack"><span id="loadFill"></span></div><div id="loadPct">YUKLANMOQDA · 0%</div><small id="loadMusicState">♫ Loading musiqasi tayyorlanmoqda...</small><button id="loadingSoundButton" class="hidden" type="button">🔊 OVOZNI YOQISH</button></div>
@@ -1413,6 +1416,51 @@ function beginLoadSequence(){
  video.play().catch(()=>endStudio());
 }
 function beginRealLoading(){
+ if(loadTimer)return;
+ const screen=$('loadScreen'),video=$('loadingEdit'),sound=$('loadingSoundButton');
+ const retrySound=sound.onclick;
+ if(!audioCtx)initAudio();
+ $('start').classList.add('hidden');
+ screen.classList.remove('hidden');
+ screen.classList.add('playing-edit');
+ video.classList.remove('hidden');
+ $('loadPct').textContent='YUKLANMOQDA · 0%';
+ $('loadFill').style.width='0%';
+ video.volume=clamp(+options.musicVolume/100,0,1);
+ video.muted=false;
+ loadTimer=true;
+ const timeout=setTimeout(()=>finish(false),25000);
+ function finish(completed){
+  if(!loadTimer||!screen.classList.contains('playing-edit'))return;
+  clearTimeout(timeout);
+  video.pause();
+  video.onended=video.onerror=video.ontimeupdate=null;
+  video.classList.add('hidden');
+  screen.classList.remove('playing-edit');
+  sound.classList.add('hidden');
+  sound.onclick=retrySound;
+  loadTimer=null;
+  if(completed){screen.classList.add('hidden');startGame()}
+  else beginLoadingMontage();
+ }
+ video.onended=()=>finish(true);
+ video.onerror=()=>finish(false);
+ video.ontimeupdate=()=>{
+  const percent=Number.isFinite(video.duration)&&video.duration>0?Math.round(100*video.currentTime/video.duration):0;
+  $('loadFill').style.width=percent+'%';
+  $('loadPct').textContent='YUKLANMOQDA · '+percent+'%';
+ };
+ sound.onclick=()=>{
+  video.muted=false;
+  video.play().then(()=>sound.classList.add('hidden')).catch(()=>{video.muted=true});
+ };
+ video.play().catch(()=>{
+  if(!screen.classList.contains('playing-edit'))return;
+  video.muted=true;
+  video.play().then(()=>sound.classList.remove('hidden')).catch(()=>finish(false));
+ });
+}
+function beginLoadingMontage(){
  if(loadTimer)return;
  if(!audioCtx)initAudio();
  $('start').classList.add('hidden');$('loadScreen').classList.remove('hidden');
