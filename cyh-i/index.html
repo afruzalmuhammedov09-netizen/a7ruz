@@ -611,11 +611,43 @@ function drawOfflineRoadsFallback(ctx,cx,cz){
  }
 }
 
+// Houses are visible in the 3D game even before real vector tiles finish loading.
+// Demonstration buildings are procedural, not surveyed house appearances.
+function cyhMakeVisibleCourtyards(m,cx,cz){
+ const points=[[27,32],[89,35],[138,38],[32,111],[96,118],[136,116]];
+ const colors=['#e7d4b7','#d1c9b9','#dfd8c5','#f0dbbd','#c6cbc3','#ddc6ae'];
+ const roofColors=['#a05c45','#7f6460','#a36f4e','#8d5552','#8a6b57','#936351'];
+ for(let i=0;i<points.length;i++){
+  const [px,pz]=points[i],x=cx*CHUNK+px,z=cz*CHUNK+pz;
+  if(window.CYH_TERRAIN&&!CYH_TERRAIN.inside(x,z))continue;
+  // Do not overlap actual mapped roadways or houses.
+  if(REAL_ROADS.ready&&REAL_ROADS.city===state.city){
+   const nr=nearestRealRoad(x,z);
+   if(nr&&nr.distance<(nr.segment.width*.5+11))continue;
+  }
+  const ground=window.CYH_TERRAIN?.surfaceHeight(x,z)||0;
+  const y=ground+.12,w=12+(i%3)*2,d=11+(i%2)*3,h=3.3+(i%3)*.18;
+  m.box(x,y,z,w,h,d,colors[i]);
+  m.roof(x,y+h,z,w+1.4,d+1.4,1.65,roofColors[i]);
+  m.box(x,y+.08,z+d/2+.13,1.6,2.25,.18,'#614c3c');
+  m.box(x-w*.25,y+1.6,z+d/2+.15,1.8,1.2,.18,'#7ba5af');
+  m.box(x+w*.25,y+1.6,z+d/2+.15,1.8,1.2,.18,'#7ba5af');
+  // Low courtyard fence, with a gate opening facing the lane.
+  const fw=w+10,fd=d+13;
+  m.box(x,y,z-fd/2,fw,1.25,.38,'#c3b7a0');
+  m.box(x-fw/2,y,z,.38,1.25,fd,'#c3b7a0');
+  m.box(x+fw/2,y,z,.38,1.25,fd,'#c3b7a0');
+  m.box(x-fw*.28,y,z+fd/2,fw*.44,1.25,.38,'#c3b7a0');
+  m.box(x+fw*.28,y,z+fd/2,fw*.44,1.25,.38,'#c3b7a0');
+  m.box(x,y,z+fd/2,3.1,1.45,.25,'#77685d');
+ }
+}
 function makeChunk(cx,cz){
  const m=new Mesh();
  if(window.CYH_TERRAIN)window.CYH_TERRAIN.drawChunk(m,cx,cz);
  else m.box(cx*CHUNK+80,-.4,cz*CHUNK+80,160,.4,160,'#7d9d79');
  if(REAL_PLACES.ready)fillOSMChunk(m,cx,cz);
+ else cyhMakeVisibleCourtyards(m,cx,cz);
  // Only OSM-tree positions and woodland interiors receive vegetation.
  if(window.CYH_TREE_DATA)for(const tree of CYH_TREE_DATA.getChunkTrees(cx,cz)){
   const begin=m.data.length,scale=tree.exact?1.10:.82;
