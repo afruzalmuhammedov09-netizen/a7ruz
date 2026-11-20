@@ -500,9 +500,12 @@ function drawOSMFallback(ctx){const p=state.player;const objects=[];
  for(const ob of objects.slice(0,650)){
   const b=ob.data;if(ob.kind==='t'){fbTree(ctx,b.x,b.z,getSeason());continue}
   if(ob.kind==='a'){fbPoly(ctx,b.poly.map(([x,z])=>[x,.08,z]),b.water?'#377e9a':'#62916c');continue}
-  const poly=b.poly;
-  for(let i=0;i<poly.length;i++){const a=poly[i],c=poly[(i+1)%poly.length];fbPoly(ctx,[[a[0],0,a[1]],[c[0],0,c[1]],[c[0],b.height,c[1]],[a[0],b.height,a[1]]],b.color)}
-  fbPoly(ctx,poly.map(([x,z])=>[x,b.height,z]),b.roof);
+  const poly=b.poly,ground=(x,z)=>window.CYH_TERRAIN?.surfaceHeight(x,z)||0;
+  const roofY=b.height+poly.reduce((sum,[x,z])=>sum+ground(x,z),0)/poly.length;
+  for(let i=0;i<poly.length;i++){const a=poly[i],c=poly[(i+1)%poly.length];
+   fbPoly(ctx,[[a[0],ground(...a),a[1]],[c[0],ground(...c),c[1]],
+    [c[0],roofY,c[1]],[a[0],roofY,a[1]]],b.color)}
+  fbPoly(ctx,poly.map(([x,z])=>[x,roofY,z]),b.roof);
  }
 }
 function drawOSMBuildingsMinimap(mini,p,scale){mini.lineWidth=1;mini.strokeStyle='#e1d2b8';mini.fillStyle='#bfb6a4';for(const b of REAL_PLACES.buildings){if(Math.abs(b.x-p.x)>150||Math.abs(b.z-p.z)>150)continue;mini.beginPath();b.poly.forEach(([x,z],i)=>{const u=(x-p.x)*scale,v=(z-p.z)*scale;if(!i)mini.moveTo(u,v);else mini.lineTo(u,v)});mini.closePath();mini.fill();mini.stroke()}}
