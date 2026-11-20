@@ -61,3 +61,18 @@ async function sync(force=false){
  finally{busy=false}
 }
 window.CYH_HOUSES={sync,refresh:()=>sync(true),status:()=>({city:lastCity,failures})};
+
+// CYH_AUTO_SCENE_START: load visible map objects without a manual button.
+let cyhAutoStarted=false;
+function cyhAutoSceneTick(){
+ if(!window.CYH_REAL_ROAD_CONTEXT?.())return;
+ cyhAutoStarted=true;
+ sync().catch(error=>console.warn('CYH automatic scene:',error));
+}
+cyhAutoSceneTick();
+const cyhAutoInit=setInterval(()=>{
+ cyhAutoSceneTick();
+ if(cyhAutoStarted)clearInterval(cyhAutoInit);
+},1200);
+setInterval(cyhAutoSceneTick,7000);
+// CYH_AUTO_SCENE_END
